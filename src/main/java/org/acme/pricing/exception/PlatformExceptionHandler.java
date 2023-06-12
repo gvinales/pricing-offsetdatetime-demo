@@ -24,25 +24,25 @@ public class PlatformExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ProblemInfo> handle(NotAuthorizedException ex) {
-        log.debug("Handling NotAuthorizedException - {}", ex.getMessage());
+        log.debug("Handling NotAuthorizedException", ex);
         return buildProblemResponse(ProblemInfo.forException(ex));
     }
 
     @ExceptionHandler
     public ResponseEntity<ProblemInfo> handle(ConstraintViolationException ex) {
-        log.debug("Handling ConstraintViolationException - {}", ex.getMessage());
+        log.debug("Handling ConstraintViolationException", ex);
         return buildProblemResponse(ProblemInfo.forException(ex));
     }
 
     @ExceptionHandler
     public ResponseEntity<ProblemInfo> handle(PlatformHttpException ex) {
-        log.debug("Handling PlatformHttpException exception - {}", ex.getMessage());
+        log.debug("Handling PlatformHttpException exception", ex);
         return buildProblemResponse(ProblemInfo.forException(ex));
     }
 
     @ExceptionHandler
     private ResponseEntity<ProblemInfo> handle(DateTimeParseException ex) {
-        log.debug("Handling PlatformHttpException exception - {}", ex.getMessage());
+        log.debug("Handling PlatformHttpException exception", ex);
         return buildProblemResponse(ProblemInfo.forException(ex));
     }
 
@@ -52,7 +52,7 @@ public class PlatformExceptionHandler {
         Throwable cause = th;
         while (cause != null) {
             if (cause instanceof ConstraintViolationException cvex) {
-                log.debug("Catch all exceptions found nested ConstraintViolationException root cause - {}", th.getMessage());
+                log.debug("Catch all exceptions found nested ConstraintViolationException root cause", th);
                 return handle(cvex);
             }
             // search for more interesting nested exceptions
@@ -63,7 +63,7 @@ public class PlatformExceptionHandler {
         cause = th;
         while (cause != null) {
             if (cause instanceof DateTimeParseException inner) {
-                log.debug("Catch all exceptions found nested DateTimeParseException root cause - {}", th.getMessage());
+                log.debug("Catch all exceptions found nested DateTimeParseException root cause", th);
                 return handle(inner);
             }
             // search for more interesting nested exceptions

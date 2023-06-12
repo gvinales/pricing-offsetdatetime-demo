@@ -27,13 +27,21 @@ public class PriceDAO {
     }
 
     public RatedPriceDTO findPriceByDate(OffsetDateTime date, Integer productId, Integer brandId) {
-        String query = "SELECT * FROM PRICES WHERE PRODUCT_ID = ? AND BRAND_ID = ? AND ? BETWEEN START_DATE AND END_DATE ORDER BY PRIORITY DESC LIMIT 1";
+        String query = "SELECT * " +
+                "FROM PRICES " +
+                "WHERE PRODUCT_ID = ?" +
+                "  AND BRAND_ID = ?" +
+                "  AND START_DATE <= ?" +
+                "  AND END_DATE >= ? " +
+                "ORDER BY PRIORITY DESC " +
+                "LIMIT 1;";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, productId);
             statement.setInt(2, brandId);
             statement.setTimestamp(3, Timestamp.from(date.toInstant()));
+            statement.setTimestamp(4, Timestamp.from(date.toInstant()));
 
             log.debug("Executing statement: " + statement);
 
@@ -44,6 +52,7 @@ public class PriceDAO {
                 return null; // No matching records found
             }
         } catch (SQLException e) {
+            log.debug("Problem executing the SQL statement", e);
             throw new PlatformHttpException("Failed to retrieve prices from the database", Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
